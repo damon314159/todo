@@ -88,6 +88,11 @@ header {
   padding: 1rem;
 }
 
+.nav-bar li.tab-selected {
+  background-image: linear-gradient(to bottom right, var(--magenta), var(--blue));
+  color: var(--background);
+}
+
 .nav-list {
   width: 100%;
   display: flex;
@@ -142,7 +147,7 @@ header {
 .add-project-btn {
   border: none;
   cursor: pointer;
-  background-color: var(--background);
+  background-color: rgba(0,0,0,0);
 }
 
 .add-icon {
@@ -165,6 +170,7 @@ header {
   display: flex;
   align-items: center;
   margin-bottom: 0.5rem;
+  cursor: pointer;
   background-color: var(--light-background);
 }
 
@@ -184,7 +190,7 @@ header {
 .delete-project-btn {
   border: none;
   cursor: pointer;
-  background-color: var(--light-background);
+  background-color: rgba(0,0,0,0);
 }
 
 .edit-icon,

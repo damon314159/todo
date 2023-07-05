@@ -14,16 +14,15 @@ function htmlToElements(html) {
 
 function openModal(fieldsArr) {
   const modal = htmlToElements(modalHTML)[0];
-  const form = modal.querySelector("form");
-  const submit = form.querySelector(".btn-wrapper");
+  const submit = modal.querySelector(".btn-wrapper");
   const close = modal.querySelector(".close-btn");
   close.addEventListener("click", {/*Make it submit but not go anywhere*/});
   fieldsArr.forEach(field => {
-    const template = form.querySelector("template").content.cloneNode(true);
+    const template = modal.querySelector("template").content.cloneNode(true);
+    template.querySelector("input").id = field;
     const label = template.querySelector("label");
     label.setAttribute("for",field);
     label.textContent = field;
-    template.querySelector("input").id = field;
     submit.parentElement.insertBefore(template, submit);
   });
   document.body.appendChild(modal);

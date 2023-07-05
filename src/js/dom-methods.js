@@ -1,16 +1,33 @@
 "use-strict";
 import mediator from "./mediator.js";
+import modalHTML from "../html/modal.template.html";
 
 const projectTemplate = document.querySelector(".project-template");
 const projectCount = document.querySelector(".project-count");
 const projectList = document.querySelector(".project-list");
-// Add listeners to the navigation tabs on load
-const navTabs = document.querySelectorAll(".nav-list>li");
-navTabs.forEach(tab => tab.addEventListener("click", ()=>{
-  const tabName = tab.querySelector("span").textContent;
-  mediator.publish("tabChanged", tabName);
-}));
 
+function htmlToElements(html) {
+  const template = document.createElement('template');
+  template.innerHTML = html.trim();
+  return template.content.childNodes;
+};
+
+function openModal(fieldsArr) {
+  const modal = htmlToElements(modalHTML)[0];
+  const form = modal.querySelector("form");
+  const submit = form.querySelector(".btn-wrapper");
+  const close = modal.querySelector(".close-btn");
+  close.addEventListener("click", {/*Make it submit but not go anywhere*/});
+  fieldsArr.forEach(field => {
+    const template = form.querySelector("template").content.cloneNode(true);
+    const label = template.querySelector("label");
+    label.setAttribute("for",field);
+    label.textContent = field;
+    template.querySelector("input").id = field;
+    submit.parentElement.insertBefore(template, submit);
+  });
+  document.body.appendChild(modal);
+}
 
 const DOMmethods = {
   addProject: function addProject(projectName) {
@@ -34,6 +51,11 @@ const DOMmethods = {
       };
     });
   },
+  createProjectModal: function createProjectModal() {
+    openModal(["Project Name"]);
+    //get a return of the name entered
+    //publish projectAdded here
+  },
   renderTasks: function renderTasks(taskList) {
     //do this later
   },
@@ -43,6 +65,7 @@ const DOMmethods = {
   mediator.subscribe("projectAdded", DOMmethods.addProject);
   mediator.subscribe("projectRemoved", DOMmethods.removeProject);
   mediator.subscribe("tabChanged", DOMmethods.changeTab);
+  mediator.subscribe("newProject", DOMmethods.createProjectModal);
 })();
 
 export default DOMmethods;

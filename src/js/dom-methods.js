@@ -12,21 +12,29 @@ function htmlToElements(html) {
   return template.content.childNodes;
 };
 
-function openModal(fieldsArr) {
+function openModal(fieldsArr, submitFn) {
   const modal = htmlToElements(modalHTML)[0];
   const form = modal.querySelector("form");
-  const submit = form.querySelector(".btn-wrapper");
+  const title = modal.querySelector(".modal-title-span");
+  const submit = modal.querySelector(".submit-btn");
   const close = modal.querySelector(".close-btn");
-  close.addEventListener("click", {/*Make it submit but not go anywhere*/});
-  fieldsArr.forEach(field => {
-    const template = form.querySelector("template").content.cloneNode(true);
+  title.textContent = fieldsArr[0];
+  fieldsArr.slice(1).forEach(field => {
+    const template = modal.querySelector("template").content.cloneNode(true);
     const label = template.querySelector("label");
+    template.querySelector("input").id = field;
     label.setAttribute("for",field);
     label.textContent = field;
-    template.querySelector("input").id = field;
-    submit.parentElement.insertBefore(template, submit);
+    form.insertBefore(template, form.lastElementChild);
+  });
+  close.addEventListener("click", () => {modal.remove()});
+  submit.addEventListener("click", (event) => {
+    event.preventDefault();
+    submitFn();
+    modal.remove();
   });
   document.body.appendChild(modal);
+  document.querySelector(".modal input").focus();
 }
 
 const DOMmethods = {
@@ -52,7 +60,10 @@ const DOMmethods = {
     });
   },
   createProjectModal: function createProjectModal() {
-    openModal(["Project Name"]);
+    openModal(["Create Project:","Project Name"], ()=>{
+      mediator.publish("projectAdded", 
+        document.getElementById("Project Name").value);
+    });
     //get a return of the name entered
     //publish projectAdded here
   },

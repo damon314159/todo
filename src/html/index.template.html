@@ -55,7 +55,39 @@
         </p>
       </nav>
       <div class="main-container">
-        <!-- To be dynamically populated -->
+        <div class="tasks-container-title">
+          <img class="all-icon" alt="all-icon" src="../assets/calendar-month.svg"><span>All</span>
+        </div>
+        <button class="add-task-btn">
+          <img class="add-task-icon" alt="add-task-icon" src="../assets/plus-box-outline.svg"><span>Add Task</span>
+        </button>
+        <div class="tasks-container">
+          <ul class="task-list">
+            <!-- To be dynamically populated -->
+            <template class="task-template">
+              <li>
+                <div class="task-card">
+                  <div class="task-left">
+                    <input type="checkbox" class="is-done" name="is-done">
+                    <span class="task-title"></span>
+                  </div>
+                  <div class="task-right">
+                    <button class="see-more-btn">
+                      <img class="see-more-icon" alt="see-more-icon" src="../assets/chevron-down.svg">
+                    </button>
+                    <span class="due-date"></span>
+                    <button class="edit-project-btn">
+                      <img class="edit-icon" alt="edit-icon" src="../assets/note-edit-outline.svg">
+                    </button>
+                    <button class="delete-project-btn">
+                      <img class="delete-icon" alt="delete-icon" src="../assets/delete-outline.svg">
+                    </button>
+                  </div>
+                </div>
+              </li>
+            </template>
+          </ul>
+        </div>     
       </div>
     </div>
   </div>

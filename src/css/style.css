@@ -10,6 +10,10 @@
   --cyan: #6cbfbf;
   --light-grey: #b3b9b8;
   --white-foreground: #dadada;
+
+  --dark-icon-filter: invert(5%) sepia(7%) saturate(2735%) hue-rotate(153deg) brightness(99%) contrast(89%);
+  --light-icon-filter: invert(91%) sepia(26%) saturate(653%) hue-rotate(116deg) brightness(78%) contrast(90%);
+
   font-size: 16px;
   font-family: Arial, Helvetica, sans-serif;
   color: var(--white-foreground);
@@ -57,6 +61,7 @@ header {
   width: 2rem;
   height: 2rem;
   margin: 0 0.5rem 0 4rem;
+  filter: var(--dark-icon-filter);
 }
 
 .header-title {
@@ -85,6 +90,7 @@ header {
   flex: 1 1 auto;
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
   padding: 1rem;
 }
 
@@ -93,22 +99,28 @@ header {
   color: var(--background);
 }
 
+.nav-bar li.tab-selected img {
+  filter: var(--dark-icon-filter);
+}
+
+.nav-bar li {
+  width: 80%;
+  display: flex;
+  padding: 0.75rem;
+  align-items: center;
+  margin-bottom: 0.5rem;
+  cursor: pointer;
+  background-color: var(--light-background);
+  border-radius: 0.5rem;
+}
+
 .nav-list {
   width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
   list-style: none;
-  margin-bottom: 1rem;
-}
-
-.nav-list li {
-  width: 80%;
-  display: flex;
-  align-items: center;
-  margin-bottom: 0.5rem;
-  cursor: pointer;
-  background-color: var(--light-background);
+  margin-bottom: 2rem;
 }
 
 .all-icon,
@@ -119,24 +131,18 @@ header {
   width: 1.5rem;
   height: 1.5rem;
   margin-right: 0.5rem;
+  filter: var(--light-icon-filter);
 }
 
 .project-wrapper {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.5rem;
 }
 
 .project-header {
   display: flex;
   justify-content: space-between;
-}
-
-.project-wrapper button {
-  height: 1rem;
-  width: 1rem;
-  color: var(--white-foreground);
 }
 
 .project-title {
@@ -151,8 +157,9 @@ header {
 }
 
 .add-icon {
-  width: 1rem;
-  height: 1rem;
+  width: 1.5rem;
+  height: 1.5rem;
+  filter: var(--light-icon-filter);
 }
 
 .project-list {
@@ -164,26 +171,17 @@ header {
   margin-top: 1rem;
 }
 
-.project-list li {
-  width: 80%;
-  height: 2rem;
-  display: flex;
-  align-items: center;
-  margin-bottom: 0.5rem;
-  cursor: pointer;
-  background-color: var(--light-background);
-}
-
 .project-icon {
   width: 1.5rem;
   height: 1.5rem;
   margin-right: 0.5rem;
+  filter: var(--light-icon-filter);
 }
 
 .project-btn-wrapper {
   margin-left: auto;
   display: flex;
-  gap: 0.5rem;
+  gap: 0.3rem;
 }
 
 .edit-project-btn,
@@ -195,8 +193,9 @@ header {
 
 .edit-icon,
 .delete-icon {
-  width: 1rem;
-  height: 1rem;
+  width: 1.5rem;
+  height: 1.5rem;
+  filter: var(--light-icon-filter);
 }
 
 .made-by {

@@ -6,9 +6,19 @@ const projects = {
 
   createProject: function createProject(projName) {
     projects.projectsList[projName] ||= {};
+    mediator.publish("projectListUpdate", Object.keys(projects.projectsList));
   },
   deleteProject: function deleteProject(projName) {
     delete projects.projectsList[projName];
+    mediator.publish("projectListUpdate", Object.keys(projects.projectsList));
+  },
+  renameProject: function renameProject([oldName, newName]) {
+    if (oldName !== newName) {
+      Object.defineProperty(projects.projectsList, newName,
+        Object.getOwnPropertyDescriptor(projects.projectsList, oldName));
+      delete projects.projectsList[oldName];
+    };
+    mediator.publish("projectListUpdate", Object.keys(projects.projectsList));
   },
   createTask: function createTask([projName, taskName, taskDataObj]) {
     projects.projectsList[projName][taskName] ||= taskDataObj;
@@ -25,6 +35,7 @@ const projects = {
 (()=>{ // Subscribe to relevant events
   mediator.subscribe("projectAdded", projects.createProject);
   mediator.subscribe("projectRemoved", projects.deleteProject);
+  mediator.subscribe("projectRenamed", projects.renameProject);
   mediator.subscribe("taskCreated", projects.createTask);
   mediator.subscribe("taskDeleted", projects.deleteTask);
   mediator.subscribe("toggleTaskDone", projects.toggleTaskDone);

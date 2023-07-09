@@ -20,6 +20,12 @@ const projects = {
     };
     mediator.publish("projectListUpdate", Object.keys(projects.projectsList));
   },
+  getProjects: function getProjects() {
+    if (Object.keys(projects.projectsList).length==0) {
+      projects.createProject("Default Project");
+    };
+    mediator.publish("returnProjList", Object.keys(projects.projectsList));
+  },
   createTask: function createTask([projName, taskName, taskDataObj]) {
     projects.projectsList[projName][taskName] ||= taskDataObj;
   },
@@ -39,16 +45,7 @@ const projects = {
   mediator.subscribe("taskCreated", projects.createTask);
   mediator.subscribe("taskDeleted", projects.deleteTask);
   mediator.subscribe("toggleTaskDone", projects.toggleTaskDone);
+  mediator.subscribe("requestProjList", projects.getProjects);
 })();
 
 export default projects;
-
-// task object looks like
-// {
-//   title,
-//   dueDate,
-//   priority,
-//   description,
-//   done,
-//   checklist,
-// }

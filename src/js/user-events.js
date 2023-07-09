@@ -9,8 +9,13 @@ navTabs.forEach(tab => tab.addEventListener("click", ()=>{
 }));
 
 const addProjBtn = document.querySelector(".add-project-btn");
-addProjBtn.addEventListener("click", event => {
+addProjBtn.addEventListener("click", ()=>{
   mediator.publish("newProject", null);
+});
+
+const newTaskBtn = document.querySelector(".add-task-btn");
+newTaskBtn.addEventListener("click", ()=>{
+  mediator.publish("newTask", null);
 });
 
 const userEvents = {};

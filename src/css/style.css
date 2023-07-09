@@ -186,7 +186,9 @@ header {
 
 .edit-project-btn,
 .delete-project-btn,
-.see-more-btn {
+.see-more-btn,
+.edit-task-btn,
+.delete-task-btn {
   border: none;
   cursor: pointer;
   background-color: rgba(0,0,0,0);
@@ -328,6 +330,8 @@ header {
 .edit-project-btn:hover,
 .delete-project-btn:hover,
 .see-more-btn:hover,
+.edit-task-btn:hover,
+.delete-task-btn:hover,
 .add-task-btn:hover,
 .nav-bar li:hover {
   filter: brightness(80%);

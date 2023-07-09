@@ -28,13 +28,21 @@ const projects = {
   },
   createTask: function createTask([projName, taskName, taskDataObj]) {
     projects.projectsList[projName][taskName] ||= taskDataObj;
+    mediator.publish("taskListUpdate", Object.values(projects.projectsList));
   },
   deleteTask: function deleteTask([projName, taskName]) {
     delete projects.projectsList[projName][taskName];
+    mediator.publish("taskListUpdate", Object.values(projects.projectsList));
   },
   toggleTaskDone: function toggleTaskDone([projName, taskName]) {
     const task = projects.projectsList[projName][taskName];
     task.done = !task.done;
+  },
+  editTask: function editTask([projName, taskName, taskDataObj]) {
+    Object.keys(taskDataObj).forEach(key =>
+      projects.projectsList[projName][taskName][key]=taskDataObj[key]
+    );
+    mediator.publish("taskListUpdate", Object.values(projects.projectsList));
   },
 };
 
@@ -44,8 +52,9 @@ const projects = {
   mediator.subscribe("projectRenamed", projects.renameProject);
   mediator.subscribe("taskCreated", projects.createTask);
   mediator.subscribe("taskDeleted", projects.deleteTask);
+  mediator.subscribe("taskEdited", projects.editTask);
   mediator.subscribe("toggleTaskDone", projects.toggleTaskDone);
   mediator.subscribe("requestProjList", projects.getProjects);
 })();
-
+window.projects=projects.projectsList;
 export default projects;

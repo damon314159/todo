@@ -5,6 +5,8 @@ import modalHTML from "../html/modal.template.html";
 const projectTemplate = document.querySelector(".project-template");
 const projectCount = document.querySelector(".project-count");
 const projectList = document.querySelector(".project-list");
+const taskTemplate = document.querySelector(".task-template");
+const taskList = document.querySelector(".task-list");
 
 function htmlToElements(html) {
   const template = document.createElement('template');
@@ -49,6 +51,13 @@ function openModal(fieldsObj, submitFn) {
           option.textContent = val;
           input.appendChild(option);
         });
+      }; 
+      if (fieldsObj[field].value) {
+        if (tag==="textarea") {
+          input.innerHTML = fieldsObj[field].value;
+        } else {
+          input.value = fieldsObj[field].value;
+        };
       };
       swapTag(input, tag);
     };
@@ -69,7 +78,7 @@ function openModal(fieldsObj, submitFn) {
     if (valid) {modal.remove();};
   });
   document.body.appendChild(modal);
-  document.querySelector(".modal input").focus();
+  document.querySelector(".modal form").children[2].focus();
 }
 
 function addProject(projectName) {
@@ -82,7 +91,6 @@ function addProject(projectName) {
         [projectName, document.getElementById("New Name").value]);
       return true;
     });
-    mediator.publish("editProjectOpened", projectName)
   });
   newProj.querySelector(".delete-project-btn").addEventListener("click", (event)=>{
     event.stopPropagation();
@@ -104,10 +112,14 @@ function updateProjectTabs(list) {
 
 function changeTab(tabName) {
   const tabs = document.querySelectorAll(".nav-bar li");
+  const title = document.querySelector(".tasks-container-title");
   tabs.forEach(tab => {
     tab.classList = '';
     if (tabName===tab.querySelector("span").textContent) {
       tab.classList = "tab-selected";
+      const clone = tab.cloneNode(true);
+      title.children[1].replaceWith(clone.children[1]);
+      title.children[0].replaceWith(clone.children[0]);
     };
   });
 };
@@ -150,6 +162,8 @@ function createTaskModal() {
           priority,
           description,
           notes,
+          done: false,
+          projName,
         }
       ]);
       return true;
@@ -157,8 +171,65 @@ function createTaskModal() {
   );
 }
 
-function renderTasks(taskList) {
-  //do this later
+function addTask(name, dataObj) {
+  const newTask = taskTemplate.content.cloneNode(true);
+  newTask.querySelector(".task-title").textContent = name;
+  let bgColor;
+  switch (dataObj.priority) {
+    case "High":
+      bgColor = "var(--red)";
+      break;
+    case "Medium":
+      bgColor = "var(--yellow)";
+      break;
+    case "Low":
+      bgColor = "var(--green)";
+      break;
+  };
+  newTask.querySelector("li").style.backgroundColor = bgColor;
+  newTask.querySelector(".edit-task-btn").addEventListener("click", event=>{
+    event.stopPropagation();
+    openModal(
+      {
+        "Edit Task:":"",
+        "Priority": {tag: "select", options: ["High", "Medium", "Low"]},
+        "Description": {tag: "textarea", required: false, value: dataObj.description},
+        "Notes": {tag: "textarea", required: false, value: dataObj.notes},
+      }, 
+      ()=>{
+        const priority = document.getElementById("Priority").value;
+        const description = document.getElementById("Description").value;
+        const notes = document.getElementById("Notes").value;
+        mediator.publish("taskEdited", 
+          [
+            dataObj.projName,
+            name,
+            {
+              priority,
+              description,
+              notes,
+            }
+          ]);
+        return true;
+      }
+    );
+  });
+  newTask.querySelector(".delete-task-btn").addEventListener("click", event=>{
+    event.stopPropagation();
+    mediator.publish("taskDeleted", [dataObj.projName, name]);
+  });
+  taskList.appendChild(newTask);
+  //add listener for see more
+  //and for done toggle with strikethrough
+};
+
+function renderTasks(taskLists) {
+  taskList.querySelectorAll("li").forEach(
+    node => node.remove()
+  );
+  taskLists.forEach(list => Object.entries(list).forEach(task => 
+    addTask(task[0], task[1])
+  ));
 };
 
 const projSelectors = (()=>{

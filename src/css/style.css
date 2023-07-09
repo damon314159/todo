@@ -236,7 +236,6 @@ header {
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
   color: var(--background);
   background-image: linear-gradient(to bottom right, var(--magenta), var(--blue));
 }
@@ -254,6 +253,7 @@ header {
   justify-self: end;
   border-radius: 0.5rem;
   border: 0;
+  cursor: pointer;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -310,6 +310,7 @@ header {
 
 .task-card input[type=checkbox] {
   appearance: none;
+  box-sizing: border-box;
   height: 1.5rem;
   width: 1.5rem;
   background-color: var(--background);
@@ -320,4 +321,19 @@ header {
 
 .task-card input[type=checkbox]:checked {
   background-color: var(--cyan);
+  border: 0.25rem solid var(--background);
+}
+
+.add-project-btn:hover,
+.edit-project-btn:hover,
+.delete-project-btn:hover,
+.see-more-btn:hover,
+.add-task-btn:hover,
+.nav-bar li:hover {
+  filter: brightness(80%);
+  transform: translateY(-2px);
+}
+
+.nav-bar li:hover {
+  box-shadow: 0 2px 4px rgba(0,0,0,0.8);
 }

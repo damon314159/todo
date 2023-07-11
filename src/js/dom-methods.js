@@ -1,6 +1,7 @@
 "use-strict";
 import mediator from "./mediator.js";
 import modalHTML from "../html/modal.template.html";
+import { format } from 'date-fns';
 
 const projectTemplate = document.querySelector(".project-template");
 const projectCount = document.querySelector(".project-count");
@@ -36,12 +37,15 @@ function openModal(fieldsObj, submitFn) {
     const template = modal.querySelector("template").content.cloneNode(true);
     const label = template.querySelector("label");
     const input = template.querySelector("input");
+    label.setAttribute("for",field);
+    label.textContent = field;
     input.id = field;
     if (typeof(fieldsObj[field])==="string") {
       input.setAttribute("type", fieldsObj[field]);
     } else {
       if (fieldsObj[field].required===false) {
         input.removeAttribute("required");
+        label.textContent += " (optional)";
       };
       const tag = fieldsObj[field].tag;
       if (tag==="select") {
@@ -61,8 +65,6 @@ function openModal(fieldsObj, submitFn) {
       };
       swapTag(input, tag);
     };
-    label.setAttribute("for",field);
-    label.textContent = field;
     form.insertBefore(template, form.lastElementChild);
   });
   close.addEventListener("click", () => modal.remove());
@@ -146,6 +148,7 @@ function createTaskModal() {
       "Select Project": {tag: "select",options:projSelectors.get()},
       "Task Name": "text",
       "Priority": {tag: "select", options:["High", "Medium", "Low"]},
+      "Due Date": "date",
       "Description": {tag: "textarea", required: false},
       "Notes": {tag: "textarea", required: false},
     },
@@ -153,6 +156,7 @@ function createTaskModal() {
       const projName = document.getElementById("Select Project").value;
       const taskName = document.getElementById("Task Name").value;
       const priority = document.getElementById("Priority").value;
+      const date = document.getElementById("Due Date").value;
       const description = document.getElementById("Description").value;
       const notes = document.getElementById("Notes").value;
       mediator.publish("taskCreated", [
@@ -160,6 +164,7 @@ function createTaskModal() {
         taskName,
         {
           priority,
+          date,
           description,
           notes,
           done: false,
@@ -173,7 +178,10 @@ function createTaskModal() {
 
 function addTask(name, dataObj) {
   const newTask = taskTemplate.content.cloneNode(true);
-  newTask.querySelector(".task-title").textContent = name;
+  const title = newTask.querySelector(".task-title");
+  title.textContent = name;
+  const date = new Date(dataObj.date);
+  newTask.querySelector(".due-date").textContent = format(date, "dd/MM");
   let bgColor;
   switch (dataObj.priority) {
     case "High":
@@ -187,16 +195,26 @@ function addTask(name, dataObj) {
       break;
   };
   newTask.querySelector("li").style.backgroundColor = bgColor;
-  newTask.querySelector(".edit-task-btn").addEventListener("click", event=>{
-    event.stopPropagation();
+  const isDone = newTask.querySelector(".is-done");
+  if (dataObj.done) {
+    isDone.checked = true;
+    title.style.textDecoration = "line-through";
+  };
+  newTask.querySelector(".description-span").textContent = 
+    dataObj.description ? dataObj.description : "No description written";
+  newTask.querySelector(".notes-span").textContent = 
+    dataObj.notes ? dataObj.notes : "No notes taken";
+  newTask.querySelector(".edit-task-btn").addEventListener("click", ()=>{
     openModal(
       {
         "Edit Task:":"",
+        "Due Date": "date",
         "Priority": {tag: "select", options: ["High", "Medium", "Low"]},
         "Description": {tag: "textarea", required: false, value: dataObj.description},
         "Notes": {tag: "textarea", required: false, value: dataObj.notes},
       }, 
       ()=>{
+        const date = document.getElementById("Due Date").value;
         const priority = document.getElementById("Priority").value;
         const description = document.getElementById("Description").value;
         const notes = document.getElementById("Notes").value;
@@ -205,6 +223,7 @@ function addTask(name, dataObj) {
             dataObj.projName,
             name,
             {
+              date,
               priority,
               description,
               notes,
@@ -214,22 +233,38 @@ function addTask(name, dataObj) {
       }
     );
   });
-  newTask.querySelector(".delete-task-btn").addEventListener("click", event=>{
-    event.stopPropagation();
+  newTask.querySelector(".delete-task-btn").addEventListener("click", ()=>{
     mediator.publish("taskDeleted", [dataObj.projName, name]);
   });
+  isDone.addEventListener("click", () => {
+    mediator.publish("toggleTaskDone", [dataObj.projName, name]);
+    if (isDone.checked) {
+      title.style.textDecoration = "line-through";
+    } else if (!isDone.checked) {
+      title.style.textDecoration = "none";
+    };
+  })
+  const dropDown = newTask.querySelector(".task-info-box");
+  const seeMore = newTask.querySelector(".see-more-icon");
+  seeMore.parentElement.addEventListener("click", ()=>{
+    if (dropDown.style.display==="") {
+      dropDown.style.display = "flex";
+      seeMore.style.transform = "rotate(180deg)";
+    } else if (dropDown.style.display==="flex") {
+      dropDown.style.display = "";
+      seeMore.style.transform = "";
+    };
+  })
   taskList.appendChild(newTask);
-  //add listener for see more
-  //and for done toggle with strikethrough
 };
 
 function renderTasks(taskLists) {
   taskList.querySelectorAll("li").forEach(
     node => node.remove()
   );
-  taskLists.forEach(list => Object.entries(list).forEach(task => 
+  Object.entries(taskLists).forEach(task => 
     addTask(task[0], task[1])
-  ));
+  );
 };
 
 const projSelectors = (()=>{

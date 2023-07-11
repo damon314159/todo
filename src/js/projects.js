@@ -1,16 +1,23 @@
 "use strict";
 import mediator from "./mediator.js";
 
+function storageSave() {
+  localStorage.clear();
+  localStorage.setItem("projectsList", JSON.stringify(projects.projectsList));
+};
+
 const projects = {
   projectsList: {},
 
   createProject: function createProject(projName) {
     projects.projectsList[projName] ||= {};
     mediator.publish("projectListUpdate", Object.keys(projects.projectsList));
+    storageSave();
   },
   deleteProject: function deleteProject(projName) {
     delete projects.projectsList[projName];
     mediator.publish("projectListUpdate", Object.keys(projects.projectsList));
+    storageSave();
   },
   renameProject: function renameProject([oldName, newName]) {
     if (oldName !== newName) {
@@ -19,6 +26,7 @@ const projects = {
       delete projects.projectsList[oldName];
     };
     mediator.publish("projectListUpdate", Object.keys(projects.projectsList));
+    storageSave();
   },
   getProjects: function getProjects() {
     if (Object.keys(projects.projectsList).length==0) {
@@ -29,20 +37,24 @@ const projects = {
   createTask: function createTask([projName, taskName, taskDataObj]) {
     projects.projectsList[projName][taskName] ||= taskDataObj;
     mediator.publish("taskUpdate", null);
+    storageSave();
   },
   deleteTask: function deleteTask([projName, taskName]) {
     delete projects.projectsList[projName][taskName];
     mediator.publish("taskUpdate", null);
+    storageSave();
   },
   toggleTaskDone: function toggleTaskDone([projName, taskName]) {
     const task = projects.projectsList[projName][taskName];
     task.done = !task.done;
+    storageSave();
   },
   editTask: function editTask([projName, taskName, taskDataObj]) {
     Object.keys(taskDataObj).forEach(key =>
       projects.projectsList[projName][taskName][key]=taskDataObj[key]
     );
     mediator.publish("taskUpdate", null);
+    storageSave();
   },
   getTasks: function getTasks() {
     const taskList = {};
@@ -53,6 +65,11 @@ const projects = {
     });
     mediator.publish("returnTaskList", taskList);
   },
+  loadStorage: function loadStorage() {
+    const json = localStorage.getItem("projectsList");
+    projects.projectsList = JSON.parse(json);
+    mediator.publish("projectListUpdate", Object.keys(projects.projectsList));
+  }
 };
 
 (()=>{ // Subscribe to relevant events
@@ -65,6 +82,7 @@ const projects = {
   mediator.subscribe("toggleTaskDone", projects.toggleTaskDone);
   mediator.subscribe("requestProjList", projects.getProjects);
   mediator.subscribe("requestTaskList", projects.getTasks);
+  mediator.subscribe("storageLoad", projects.loadStorage);
 })();
-window.projects=projects.projectsList;
+
 export default projects;

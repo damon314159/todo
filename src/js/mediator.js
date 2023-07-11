@@ -1,3 +1,5 @@
+"use strict";
+
 const mediator = {
   events: {},
   subscribe: function(eventName, callback) {

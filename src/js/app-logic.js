@@ -2,10 +2,6 @@
 import mediator from "./mediator.js";
 import { differenceInCalendarDays } from 'date-fns';
 
-// On load, create default project and set tab to 'All'
-mediator.publish("projectAdded", "Default Project");
-mediator.publish("tabChanged", "All");
-
 const currTab = (()=>{
   let tab = "All";
   function set(tabName) {
@@ -69,5 +65,12 @@ const appLogic = {
   mediator.subscribe("taskUpdate", appLogic.requestTaskList);
   mediator.subscribe("returnTaskList", appLogic.filterTasks);
 })();
+
+if (!localStorage.getItem("projectsList")) {
+  mediator.publish("projectAdded", "Default Project");
+} else {
+  mediator.publish("storageLoad", null);
+};
+mediator.publish("tabChanged", "All");
 
 export default appLogic;

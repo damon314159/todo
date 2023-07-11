@@ -286,13 +286,15 @@ header {
 }
 
 .tasks-container li {
+  position: relative;
   width: 70%;
   padding-left: 0.5rem;
   border-radius: 0.5rem;
   background-color: var(--magenta);
 }
 
-.task-card {
+.task-card,
+.task-info-box {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -301,6 +303,19 @@ header {
   border-top-right-radius: 0.5rem;
   border-bottom-right-radius: 0.5rem;
   background-color: var(--light-background);
+}
+
+.task-info-box {
+  display: none;
+  position: absolute;
+  flex-direction: column;
+  top: 120%;
+  right: 0;
+  width: 95%;
+  border-radius: 0.5rem;
+  margin: 0 auto;
+  z-index: 10;
+  border: 1px solid var(--cyan);
 }
 
 .task-left,
